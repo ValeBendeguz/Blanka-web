@@ -78,13 +78,15 @@ export async function POST(req: NextRequest) {
       if (productType === 'course') {
         const courseTitle = productTitle || 'Kurzus';
         const course = productId ? await getCourseById(productId) : null;
+        const systemeioId = course?.systemeioId || session.metadata?.systemeioId || '';
+        const systemeioUrl = course?.systemeioUrl || session.metadata?.systemeioUrl || '';
         await Promise.allSettled([
-          addPurchaseTag(email, 'course', productId, course?.systemeioId),
+          addPurchaseTag(email, 'course', productId, systemeioId),
           addCoursePurchase({ email, courseId: productId, stripeSessionId: session.id }),
           sendEmail({
             to: email,
             subject: `Üdvözöllek a(z) ${courseTitle} kurzuson! 🎉`,
-            template: CourseWelcomeEmail({ email, name: customerName, courseTitle, courseUrl: course?.systemeioUrl }),
+            template: CourseWelcomeEmail({ email, name: customerName, courseTitle, courseUrl: systemeioUrl }),
           }),
         ]);
       } else if (productType === 'digital') {

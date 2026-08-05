@@ -39,10 +39,13 @@ export async function POST(req: NextRequest) {
     const product = products.find(p => p.stripePriceId === priceId);
     const course = courses.find(c => c.stripePriceId === priceId);
 
+    // A product in Termékek with systemeioId acts as a course
+    const productAsCourse = type === 'course' && !course && product?.systemeioId ? product : null;
+
     if (type === 'digital' && !product) {
       return NextResponse.json({ error: 'Termék nem található.' }, { status: 404 });
     }
-    if (type === 'course' && !course) {
+    if (type === 'course' && !course && !productAsCourse) {
       return NextResponse.json({ error: 'Kurzus nem található.' }, { status: 404 });
     }
     if (type === 'mentoring' && priceId !== process.env.NEXT_PUBLIC_STRIPE_MENTORING_PRICE_ID) {
@@ -61,7 +64,7 @@ export async function POST(req: NextRequest) {
       if (!webinar) return NextResponse.json({ error: 'Webinár nem található.' }, { status: 404 });
     }
 
-    const title = product?.title ?? course?.title ?? webinar?.title ?? (
+    const title = course?.title ?? productAsCourse?.title ?? product?.title ?? webinar?.title ?? (
       type === 'mentoring' ? 'Privát Havi Mentorprogram' :
       type === 'group-mentoring' ? 'Kiscsoportos Havi Mentorprogram' :
       type === 'strategy' ? 'Stratégia konzultáció' : ''
@@ -78,6 +81,8 @@ export async function POST(req: NextRequest) {
         productId: product?.id ?? course?.id ?? webinarId ?? '',
         blobKey: product?.blobKey ?? '',
         productTitle: title,
+        systemeioId: productAsCourse?.systemeioId ?? course?.systemeioId ?? '',
+        systemeioUrl: productAsCourse?.systemeioUrl ?? course?.systemeioUrl ?? '',
         billingName: billing.name,
         billingPostalCode: billing.postalCode || '',
         billingCity: billing.city || '',

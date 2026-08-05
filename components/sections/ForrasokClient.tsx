@@ -135,7 +135,7 @@ function ResourceCard({ product }: { product: Product }) {
         <FreeClaimForm productId={product.id} />
       ) : product.stripePriceId ? (
         <Button
-          href={`/penztar?priceId=${product.stripePriceId}&type=digital`}
+          href={`/penztar?priceId=${product.stripePriceId}&type=${product.systemeioId ? 'course' : 'digital'}`}
           size="sm"
           className="w-full justify-center"
         >

@@ -242,6 +242,8 @@ export default function AdminTermekekPage() {
                   </select>
                 </div>
                 <Input label="Stripe Price ID (opcionális)" value={form.stripePriceId || ''} onChange={e => setForm(f => ({ ...f, stripePriceId: e.target.value }))} placeholder="price_..." />
+                <Input label="Systeme.io kurzus ID (ha kurzus, nem letölthető)" value={form.systemeioId || ''} onChange={e => setForm(f => ({ ...f, systemeioId: e.target.value }))} placeholder="626821" />
+                <Input label="Systeme.io kurzus URL (opcionális)" value={form.systemeioUrl || ''} onChange={e => setForm(f => ({ ...f, systemeioUrl: e.target.value }))} placeholder="https://..." />
                 <div>
                   <label className="text-sm font-medium text-brand-text font-sans block mb-1">PDF feltöltés</label>
                   <label className="flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-brand-border cursor-pointer hover:border-brand-purple transition-colors">

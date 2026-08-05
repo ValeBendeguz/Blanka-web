@@ -62,6 +62,8 @@ function mapProduct(r: { id: string; fields: Record<string, unknown> }): Product
     nextStart: r.fields['NextStart'] ? String(r.fields['NextStart']) : undefined,
     tags: r.fields['Tags'] ? String(r.fields['Tags']).split(',').map((t: string) => t.trim()).filter(Boolean) : undefined,
     imageUrl: r.fields['ImageUrl'] ? String(r.fields['ImageUrl']) : undefined,
+    systemeioId: r.fields['SystemeioId'] ? String(r.fields['SystemeioId']) : undefined,
+    systemeioUrl: r.fields['SystemeioUrl'] ? String(r.fields['SystemeioUrl']) : undefined,
   };
 }
 

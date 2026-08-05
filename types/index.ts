@@ -24,6 +24,8 @@ export interface Product {
   nextStart?: string;
   tags?: string[];
   imageUrl?: string;
+  systemeioId?: string;
+  systemeioUrl?: string;
 }
 
 

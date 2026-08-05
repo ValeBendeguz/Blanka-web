@@ -40,6 +40,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
       Category: body.category,
       Active: body.active,
       ...(stripePriceId ? { StripePriceId: stripePriceId } : {}),
+      ...(body.systemeioId !== undefined ? { SystemeioId: body.systemeioId } : {}),
+      ...(body.systemeioUrl !== undefined ? { SystemeioUrl: body.systemeioUrl } : {}),
     };
 
     await getBase()(TABLE()).update(id, fields as Partial<FieldSet>);
