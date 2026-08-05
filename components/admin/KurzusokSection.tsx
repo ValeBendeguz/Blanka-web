@@ -42,6 +42,7 @@ export function KurzusokSection() {
   const [editing, setEditing] = useState<Course | null>(null);
   const [form, setForm] = useState<FormData>(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [newPriceId, setNewPriceId] = useState('');
 
   useEffect(() => { fetchCourses(); }, []);
 
@@ -108,6 +109,8 @@ export function KurzusokSection() {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
+        const j = await res.json().catch(() => ({}));
+        if (j.stripePriceId && !form.stripePriceId) setNewPriceId(j.stripePriceId);
         await fetchCourses();
         setFormOpen(false);
       } else {
@@ -153,6 +156,12 @@ export function KurzusokSection() {
           <p className="font-sans text-sm text-red-700">{error}</p>
         </Card>
       )}
+      {newPriceId && (
+        <Card className="bg-green-50 border-green-200 mb-4">
+          <p className="font-sans text-sm text-green-700">✓ Új Stripe ár létrehozva: <span className="font-mono font-bold">{newPriceId}</span></p>
+          <button onClick={() => setNewPriceId('')} className="text-xs text-green-600 underline mt-1">Bezárás</button>
+        </Card>
+      )}
 
       {loading ? (
         <p className="font-sans text-brand-muted text-sm py-4">Betöltés...</p>
@@ -186,7 +195,10 @@ export function KurzusokSection() {
                   {c.features.length > 0 && (
                     <span className="font-sans text-xs text-brand-muted">{c.features.length} funkció</span>
                   )}
-                  {c.systemeioUrl && (
+                  {c.stripePriceId && (
+                    <span className="font-sans text-xs text-brand-muted font-mono">{c.stripePriceId}</span>
+                  )}
+                  {!c.stripePriceId && c.systemeioUrl && (
                     <a href={c.systemeioUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-purple hover:underline font-sans">
                       Checkout link
                     </a>
