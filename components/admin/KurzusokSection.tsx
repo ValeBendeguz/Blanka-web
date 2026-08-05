@@ -17,6 +17,7 @@ const emptyForm: FormData = {
   status: 'coming_soon',
   active: true,
   systemeioUrl: '',
+  systemeioId: '',
   stripePriceId: '',
   features: [],
   featuresText: '',
@@ -79,6 +80,7 @@ export function KurzusokSection() {
       status: c.status,
       active: c.active,
       systemeioUrl: c.systemeioUrl ?? '',
+      systemeioId: c.systemeioId ?? '',
       stripePriceId: c.stripePriceId ?? '',
       features: c.features,
       featuresText: c.features.join('\n'),
@@ -99,6 +101,7 @@ export function KurzusokSection() {
         active: form.active,
         features,
         ...(form.systemeioUrl ? { systemeioUrl: form.systemeioUrl } : {}),
+        ...(form.systemeioId ? { systemeioId: form.systemeioId } : {}),
         ...(form.stripePriceId ? { stripePriceId: form.stripePriceId } : {}),
       };
       const url = editing ? `/api/admin/courses/${editing.id}` : '/api/admin/courses';
@@ -279,13 +282,13 @@ export function KurzusokSection() {
                 />
               </div>
               <Input
-                label="Checkout URL (Systeme.io vagy Stripe)"
-                value={form.systemeioUrl ?? ''}
-                onChange={e => setForm(f => ({ ...f, systemeioUrl: e.target.value }))}
-                placeholder="https://..."
+                label="Systeme.io kurzus ID (pl. 626821)"
+                value={form.systemeioId ?? ''}
+                onChange={e => setForm(f => ({ ...f, systemeioId: e.target.value }))}
+                placeholder="626821"
               />
               <Input
-                label="Stripe Price ID (opcionális)"
+                label="Stripe Price ID (hagyd üresen = auto-létrehozza)"
                 value={form.stripePriceId ?? ''}
                 onChange={e => setForm(f => ({ ...f, stripePriceId: e.target.value }))}
                 placeholder="price_..."
