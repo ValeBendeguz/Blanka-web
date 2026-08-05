@@ -166,10 +166,10 @@ export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strat
                     {course.price.toLocaleString('hu-HU')} Ft
                   </p>
                 </div>
-                {course.status === 'active' && (course.systemeioUrl || course.stripePriceId) ? (
+                {course.status === 'active' && (course.stripePriceId || course.systemeioUrl) ? (
                   <Button
-                    href={course.systemeioUrl || `/kerdoiv?priceId=${course.stripePriceId}&type=course`}
-                    external={!!course.systemeioUrl}
+                    href={course.stripePriceId ? `/kerdoiv?priceId=${course.stripePriceId}&type=course` : course.systemeioUrl!}
+                    external={!course.stripePriceId && !!course.systemeioUrl}
                     size="lg"
                   >
                     Csatlakozom <ArrowRight size={16} />
