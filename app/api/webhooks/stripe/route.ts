@@ -273,6 +273,16 @@ export async function POST(req: NextRequest) {
 
     if (email) {
       try {
+        // Fetch customer address from Stripe for the invoice
+        let customerAddress: Stripe.Address | null = null;
+        if (invoice.customer) {
+          const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { apiVersion: '2026-05-27.dahlia' });
+          const customer = typeof invoice.customer === 'string'
+            ? await stripe.customers.retrieve(invoice.customer)
+            : invoice.customer;
+          if (!customer.deleted) customerAddress = customer.address ?? null;
+        }
+
         if (productType === 'group-mentoring') {
           const s = await getSettings(['group_mentoring_schedule', 'group_mentoring_zoom_url']);
           await sendEmail({
@@ -295,6 +305,7 @@ export async function POST(req: NextRequest) {
           await issueInvoice({
             email,
             name: customerName,
+            address: customerAddress,
             amountHuf,
             title: invoiceTitle,
             orderNumber: invoice.id,
