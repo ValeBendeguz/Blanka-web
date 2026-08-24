@@ -155,6 +155,7 @@ export default async function ProgramokPage() {
           groupMentoringSchedule={groupMentoringSchedule}
           strategyPriceId={process.env.NEXT_PUBLIC_STRIPE_STRATEGY_PRICE_ID || ''}
           mentoringPriceId={process.env.NEXT_PUBLIC_STRIPE_MENTORING_PRICE_ID || ''}
+          premiumMentoringPriceId={process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MENTORING_PRICE_ID || ''}
         />
 
         {/* CTA */}

@@ -206,14 +206,18 @@ export async function addDigitalPurchase(data: {
 export async function addMentoringPurchase(data: {
   email: string;
   name?: string;
-  program: 'privat' | 'kiscsoportos';
+  program: 'privat' | 'kiscsoportos' | 'premium';
   stripeSessionId: string;
 }) {
   const base = getBase();
+  const programLabel =
+    data.program === 'privat' ? 'Privát Havi Mentorprogram' :
+    data.program === 'premium' ? 'Prémium Privát Havi Mentorprogram' :
+    'Kiscsoportos Havi Mentorprogram';
   await base(TABLES.mentoringBuyers()).create({
     Email: data.email,
     Name: data.name || '',
-    Program: data.program === 'privat' ? 'Privát Havi Mentorprogram' : 'Kiscsoportos Havi Mentorprogram',
+    Program: programLabel,
     StripeSessionId: data.stripeSessionId,
     PurchasedAt: new Date().toISOString(),
   });

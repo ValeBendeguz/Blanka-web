@@ -8,6 +8,7 @@ import { createInvoice } from '@/lib/szamlazz';
 import { CourseWelcomeEmail } from '@/emails/course-welcome';
 import { DigitalProductDeliveryEmail } from '@/emails/digital-product-delivery';
 import { MentoringBookingEmail } from '@/emails/mentoring-booking';
+import { PremiumMentoringBookingEmail } from '@/emails/premium-mentoring-booking';
 import { GroupMentoringBookingEmail } from '@/emails/group-mentoring-booking';
 import { StrategiaBookingEmail } from '@/emails/strategia-booking';
 import { WebinarConfirmationEmail } from '@/emails/webinar-confirmation';
@@ -118,6 +119,15 @@ export async function POST(req: NextRequest) {
             template: MentoringBookingEmail({ email, name: customerName }),
           }),
         ]);
+      } else if (productType === 'premium-mentoring' && session.mode === 'subscription') {
+        await Promise.allSettled([
+          addMentoringPurchase({ email, name: customerName, program: 'premium', stripeSessionId: session.id }),
+          sendEmail({
+            to: email,
+            subject: 'Foglald le a havi négy alkalmadat! 📅',
+            template: PremiumMentoringBookingEmail({ email, name: customerName }),
+          }),
+        ]);
       } else if (productType === 'group-mentoring' && session.mode === 'subscription') {
         const s = await getSettings(['group_mentoring_schedule', 'group_mentoring_zoom_url']);
         await Promise.allSettled([
@@ -153,6 +163,7 @@ export async function POST(req: NextRequest) {
       if (email && amountHuf > 0) {
         const invoiceTitle = productTitle || (
           productType === 'mentoring' ? 'Privát Havi Mentorprogram' :
+          productType === 'premium-mentoring' ? 'Prémium Privát Havi Mentorprogram' :
           productType === 'group-mentoring' ? 'Kiscsoportos Havi Mentorprogram' :
           productType === 'strategy' ? 'Stratégia konzultáció' : 'Vásárlás'
         );
@@ -290,6 +301,12 @@ export async function POST(req: NextRequest) {
             subject: 'Új hónap a kiscsoportos mentorprogramban! 📅',
             template: GroupMentoringBookingEmail({ email, name: customerName, nextSessionDate: s.group_mentoring_schedule, zoomLink: s.group_mentoring_zoom_url }),
           });
+        } else if (productType === 'premium-mentoring') {
+          await sendEmail({
+            to: email,
+            subject: 'Új hónap, új alkalmak - foglald le mind a négy időpontodat! 📅',
+            template: PremiumMentoringBookingEmail({ email, name: customerName }),
+          });
         } else {
           await sendEmail({
             to: email,
@@ -299,9 +316,10 @@ export async function POST(req: NextRequest) {
         }
 
         if (amountHuf > 0) {
-          const invoiceTitle = productType === 'group-mentoring'
-            ? 'Kiscsoportos Havi Mentorprogram'
-            : 'Privát Havi Mentorprogram';
+          const invoiceTitle =
+            productType === 'group-mentoring' ? 'Kiscsoportos Havi Mentorprogram' :
+            productType === 'premium-mentoring' ? 'Prémium Privát Havi Mentorprogram' :
+            'Privát Havi Mentorprogram';
           await issueInvoice({
             email,
             name: customerName,

@@ -28,6 +28,7 @@ interface Props {
   groupMentoringSchedule: string;
   strategyPriceId: string;
   mentoringPriceId: string;
+  premiumMentoringPriceId: string;
 }
 
 const NAV_ITEMS = [
@@ -112,7 +113,7 @@ function scrollTo(id: string) {
   }
 }
 
-export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strategyPriceId, mentoringPriceId }: Props) {
+export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strategyPriceId, mentoringPriceId, premiumMentoringPriceId }: Props) {
   return (
     <>
       {/* Scroll navigation */}
@@ -195,7 +196,7 @@ export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strat
       {/* Mentorprogramok */}
       <div id="mentorprogramok" className="scroll-mt-24">
         <SectionWrapper bg="default">
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             {/* Stratégia */}
             <Card className="flex flex-col" id="strategia">
@@ -325,6 +326,55 @@ export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strat
                 </div>
                 {mentoringPriceId ? (
                   <Button href={`/kerdoiv?priceId=${mentoringPriceId}&type=mentoring`} size="sm">
+                    Feliratkozom <ArrowRight size={14} />
+                  </Button>
+                ) : (
+                  <Button href="/kapcsolat" size="sm">
+                    Érdeklődjetek <ArrowRight size={14} />
+                  </Button>
+                )}
+              </div>
+            </Card>
+
+            {/* Prémium Privát */}
+            <Card className="flex flex-col border-brand-purple ring-2 ring-brand-purple/30 relative bg-gradient-to-b from-brand-purple-light/30 to-white" id="premium">
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-brand-purple to-[#9A55C4] text-white text-xs font-semibold px-3 py-1 rounded-full font-sans">
+                Prémium
+              </span>
+              <Badge variant="blue" className="mb-3 self-start">Privát · Intenzív</Badge>
+              <h3 className="font-display text-xl font-bold text-brand-blue mb-1">
+                Prémium Privát Havi Mentorprogram
+              </h3>
+              <FlagRow />
+              <p className="font-sans text-sm text-brand-muted mb-4 leading-relaxed">
+                A legintenzívebb és legszemélyesebb együttműködési forma azoknak, akik heti
+                rendszerességgel, gyorsan és fókuszáltan szeretnének fejlődni.
+              </p>
+              <ul className="space-y-2 mb-4 flex-1">
+                {[
+                  'Heti 1, összesen havi 4 × 75 perc online 1:1 mentoralkalom',
+                  'Teljesen személyre szabott tanulási stratégia',
+                  'Folyamatos feedback és támogatás',
+                  'Személyiségtípus-alapú módszertan',
+                  'Valódi kommunikációra épülő nyelvhasználat',
+                ].map(f => (
+                  <li key={f} className="flex items-start gap-2 font-sans text-xs text-brand-text">
+                    <Check size={13} className="text-brand-purple shrink-0 mt-0.5" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <p className="font-sans text-xs text-brand-muted italic mb-4">
+                Egyszerre csak limitált számú prémium mentoráltat vállalok, hogy mindenki
+                maximális figyelmet kapjon.
+              </p>
+              <div className="mt-auto flex items-center justify-between pt-4 border-t border-brand-border">
+                <div>
+                  <p className="font-display text-xl font-bold text-brand-blue">89 990 Ft</p>
+                  <p className="font-sans text-xs text-brand-muted">/ hó · automatikus megújulás</p>
+                </div>
+                {premiumMentoringPriceId ? (
+                  <Button href={`/kerdoiv?priceId=${premiumMentoringPriceId}&type=premium-mentoring`} size="sm">
                     Feliratkozom <ArrowRight size={14} />
                   </Button>
                 ) : (

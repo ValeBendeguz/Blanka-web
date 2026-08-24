@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     };
 
     const priceId = body.priceId;
-    const type = (body.type ?? 'digital') as 'digital' | 'course' | 'mentoring' | 'group-mentoring' | 'strategy' | 'webinar';
+    const type = (body.type ?? 'digital') as 'digital' | 'course' | 'mentoring' | 'premium-mentoring' | 'group-mentoring' | 'strategy' | 'webinar';
     const webinarId = body.webinarId;
     const billing = body.billing;
 
@@ -57,6 +57,9 @@ export async function POST(req: NextRequest) {
     if (type === 'group-mentoring' && priceId !== process.env.NEXT_PUBLIC_STRIPE_GROUP_MENTORING_PRICE_ID) {
       return NextResponse.json({ error: 'Érvénytelen csoportos mentoring azonosító.' }, { status: 400 });
     }
+    if (type === 'premium-mentoring' && priceId !== process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MENTORING_PRICE_ID) {
+      return NextResponse.json({ error: 'Érvénytelen prémium mentoring azonosító.' }, { status: 400 });
+    }
 
     let webinar = null;
     if (type === 'webinar' && webinarId) {
@@ -66,11 +69,12 @@ export async function POST(req: NextRequest) {
 
     const title = course?.title ?? productAsCourse?.title ?? product?.title ?? webinar?.title ?? (
       type === 'mentoring' ? 'Privát Havi Mentorprogram' :
+      type === 'premium-mentoring' ? 'Prémium Privát Havi Mentorprogram' :
       type === 'group-mentoring' ? 'Kiscsoportos Havi Mentorprogram' :
       type === 'strategy' ? 'Stratégia konzultáció' : ''
     );
 
-    const stripeType = (type === 'mentoring' || type === 'group-mentoring') ? 'subscription' : type === 'strategy' || type === 'webinar' ? 'digital' : type;
+    const stripeType = (type === 'mentoring' || type === 'premium-mentoring' || type === 'group-mentoring') ? 'subscription' : type === 'strategy' || type === 'webinar' ? 'digital' : type;
 
     const { url } = await createCheckoutSession({
       priceId,
