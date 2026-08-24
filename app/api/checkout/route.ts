@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
 import { createCheckoutSession } from '@/lib/stripe';
-import { getActiveProducts, getActiveCourses, getWebinarById } from '@/lib/airtable';
+import { getActiveProducts, getActiveCourses, getWebinarById, getSetting, setSetting } from '@/lib/airtable';
 
 interface BillingData {
   email: string;
@@ -75,10 +76,29 @@ export async function POST(req: NextRequest) {
 
     const stripeType = (type === 'mentoring' || type === 'premium-mentoring' || type === 'group-mentoring') ? 'subscription' : type === 'strategy' || type === 'webinar' ? 'digital' : type;
 
+    let resolvedPriceId = priceId;
+    if (isPremiumMentoring) {
+      let savedId = await getSetting('premium_mentoring_price_id');
+      if (!savedId && process.env.STRIPE_SECRET_KEY) {
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2026-05-27.dahlia' });
+        const product = await stripe.products.create({
+          name: 'Prémium Privát Havi Mentorprogram',
+          metadata: { type: 'premium-mentoring' },
+        });
+        const price = await stripe.prices.create({
+          product: product.id,
+          unit_amount: 8999000,
+          currency: 'huf',
+          recurring: { interval: 'month' },
+        });
+        savedId = price.id;
+        await setSetting('premium_mentoring_price_id', savedId);
+      }
+      resolvedPriceId = savedId;
+    }
+
     const { url } = await createCheckoutSession({
-      ...(isPremiumMentoring
-        ? { priceData: { unitAmount: 8999000, currency: 'huf', recurring: { interval: 'month' }, productName: 'Prémium Privát Havi Mentorprogram' } }
-        : { priceId }),
+      priceId: resolvedPriceId,
       productType: stripeType as 'digital' | 'course' | 'subscription',
       customerEmail: billing.email,
       metadata: {

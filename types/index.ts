@@ -84,7 +84,6 @@ export interface FreebieClaimPayload {
 
 export interface CheckoutParams {
   priceId?: string;
-  priceData?: { unitAmount: number; currency: string; recurring?: { interval: 'month' | 'year' }; productName: string };
   productType: 'course' | 'subscription' | 'digital' | 'mentoring' | 'group-mentoring' | 'strategy';
   customerEmail?: string;
   metadata?: Record<string, string>;
