@@ -15,6 +15,7 @@ interface InvoiceData {
     city?: string;
     line?: string;
   };
+  customerTaxNumber?: string;
   items: InvoiceItem[];
   orderNumber: string;
   comment?: string;
@@ -84,7 +85,7 @@ function buildInvoiceXml(data: InvoiceData): string {
     <telepules>${escXml(data.customerAddress?.city || '')}</telepules>
     <cim>${escXml(data.customerAddress?.line || '')}</cim>
     <email>${escXml(data.customerEmail)}</email>
-    <sendEmail>true</sendEmail>
+    <sendEmail>true</sendEmail>${data.customerTaxNumber ? `\n    <adoszam>${escXml(data.customerTaxNumber)}</adoszam>` : ''}
   </vevo>
   <tetelek>
 ${itemsXml}

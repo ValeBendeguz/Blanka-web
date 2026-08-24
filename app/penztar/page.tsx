@@ -24,6 +24,9 @@ function CheckoutForm() {
     postalCode: '',
     city: '',
     line: '',
+    isCompany: false,
+    companyName: '',
+    taxNumber: '',
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
@@ -47,6 +50,9 @@ function CheckoutForm() {
             postalCode: form.postalCode,
             city: form.city,
             line: form.line,
+            isCompany: form.isCompany,
+            companyName: form.companyName,
+            taxNumber: form.taxNumber,
           },
         }),
       });
@@ -94,13 +100,44 @@ function CheckoutForm() {
               onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
               required
             />
-            <Input
-              label="Számlázási név"
-              placeholder="Teljes név vagy cégnév"
-              value={form.name}
-              onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-              required
-            />
+
+            {/* Company toggle */}
+            <div
+              className={`flex items-center justify-between px-4 py-3 rounded-xl border cursor-pointer transition-colors ${form.isCompany ? 'border-brand-purple bg-brand-purple-light/30' : 'border-brand-border bg-white'}`}
+              onClick={() => setForm(f => ({ ...f, isCompany: !f.isCompany }))}
+            >
+              <span className="font-sans text-sm font-medium text-brand-text">Céges számlát kérek</span>
+              <div className={`relative w-10 h-6 rounded-full transition-colors ${form.isCompany ? 'bg-brand-purple' : 'bg-gray-200'}`}>
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-all ${form.isCompany ? 'left-5' : 'left-1'}`} />
+              </div>
+            </div>
+
+            {form.isCompany ? (
+              <>
+                <Input
+                  label="Cég neve"
+                  placeholder="Példa Kft."
+                  value={form.companyName}
+                  onChange={e => setForm(f => ({ ...f, companyName: e.target.value }))}
+                  required
+                />
+                <Input
+                  label="Adószám"
+                  placeholder="12345678-1-23"
+                  value={form.taxNumber}
+                  onChange={e => setForm(f => ({ ...f, taxNumber: e.target.value }))}
+                  required
+                />
+              </>
+            ) : (
+              <Input
+                label="Számlázási név"
+                placeholder="Teljes név"
+                value={form.name}
+                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                required
+              />
+            )}
             <div className="grid grid-cols-[120px_1fr] gap-3">
               <Input
                 label="Irányítószám"

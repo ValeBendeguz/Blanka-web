@@ -38,12 +38,17 @@ async function issueInvoice(opts: {
         ? { postalCode: opts.metadata.billingPostalCode || '', city: opts.metadata.billingCity || '', line: opts.metadata.billingLine || '' }
         : undefined;
 
-    const customerName = opts.name || opts.metadata?.billingName || opts.email;
+    const isCompany = opts.metadata?.billingIsCompany === 'true';
+    const customerName = isCompany
+      ? (opts.metadata?.billingCompanyName || opts.name || opts.email)
+      : (opts.name || opts.metadata?.billingName || opts.email);
+    const taxNumber = isCompany ? (opts.metadata?.billingTaxNumber || '') : '';
 
     const { invoiceNumber } = await createInvoice({
       customerName,
       customerEmail: opts.email,
       customerAddress: address,
+      customerTaxNumber: taxNumber || undefined,
       items: [{ name: opts.title, quantity: 1, unitPrice: opts.amountHuf }],
       orderNumber: opts.orderNumber,
     });

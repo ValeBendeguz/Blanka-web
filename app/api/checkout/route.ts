@@ -9,6 +9,9 @@ interface BillingData {
   postalCode: string;
   city: string;
   line: string;
+  isCompany?: boolean;
+  companyName?: string;
+  taxNumber?: string;
 }
 
 export async function POST(req: NextRequest) {
@@ -112,6 +115,9 @@ export async function POST(req: NextRequest) {
         billingPostalCode: billing.postalCode || '',
         billingCity: billing.city || '',
         billingLine: billing.line || '',
+        billingIsCompany: billing.isCompany ? 'true' : 'false',
+        billingCompanyName: billing.companyName || '',
+        billingTaxNumber: billing.taxNumber || '',
       },
     });
 
