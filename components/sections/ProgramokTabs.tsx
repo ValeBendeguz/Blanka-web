@@ -28,7 +28,6 @@ interface Props {
   groupMentoringSchedule: string;
   strategyPriceId: string;
   mentoringPriceId: string;
-  premiumMentoringPriceId: string;
 }
 
 const NAV_ITEMS = [
@@ -113,7 +112,7 @@ function scrollTo(id: string) {
   }
 }
 
-export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strategyPriceId, mentoringPriceId, premiumMentoringPriceId }: Props) {
+export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strategyPriceId, mentoringPriceId }: Props) {
   return (
     <>
       {/* Scroll navigation */}
@@ -373,15 +372,9 @@ export function ProgramokTabs({ courses, webinars, groupMentoringSchedule, strat
                   <p className="font-display text-xl font-bold text-brand-blue">89 990 Ft</p>
                   <p className="font-sans text-xs text-brand-muted">/ hó · automatikus megújulás</p>
                 </div>
-                {premiumMentoringPriceId ? (
-                  <Button href={`/kerdoiv?priceId=${premiumMentoringPriceId}&type=premium-mentoring`} size="sm">
-                    Feliratkozom <ArrowRight size={14} />
-                  </Button>
-                ) : (
-                  <Button href="/kapcsolat" size="sm">
-                    Érdeklődjetek <ArrowRight size={14} />
-                  </Button>
-                )}
+                <Button href="/kerdoiv?type=premium-mentoring" size="sm">
+                  Feliratkozom <ArrowRight size={14} />
+                </Button>
               </div>
             </Card>
 

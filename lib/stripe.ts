@@ -19,6 +19,7 @@ export async function findOrCreateStripeCustomer(email: string): Promise<string 
 
 export async function createCheckoutSession({
   priceId,
+  priceData,
   productType,
   customerEmail,
   metadata,
@@ -28,13 +29,25 @@ export async function createCheckoutSession({
 
   const existingCustomerId = customerEmail ? await findOrCreateStripeCustomer(customerEmail) : undefined;
 
+  const lineItem = priceData
+    ? {
+        price_data: {
+          currency: priceData.currency,
+          unit_amount: priceData.unitAmount,
+          product_data: { name: priceData.productName },
+          ...(priceData.recurring ? { recurring: { interval: priceData.recurring.interval } } : {}),
+        },
+        quantity: 1,
+      }
+    : { price: priceId!, quantity: 1 };
+
   const session = await stripe.checkout.sessions.create({
     mode: isSubscription ? 'subscription' : 'payment',
     payment_method_types: ['card'],
     ...(existingCustomerId
       ? { customer: existingCustomerId }
       : { customer_email: customerEmail }),
-    line_items: [{ price: priceId, quantity: 1 }],
+    line_items: [lineItem],
     success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/sikeres-vasarlas?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/programok`,
     metadata: { productType, ...metadata },

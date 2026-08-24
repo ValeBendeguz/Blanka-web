@@ -24,7 +24,9 @@ export async function POST(req: NextRequest) {
     const webinarId = body.webinarId;
     const billing = body.billing;
 
-    if (!priceId) {
+    const isPremiumMentoring = type === 'premium-mentoring';
+
+    if (!priceId && !isPremiumMentoring) {
       return NextResponse.json({ error: 'Hiányzó termék azonosító.' }, { status: 400 });
     }
     if (!billing?.email || !billing?.name) {
@@ -57,9 +59,6 @@ export async function POST(req: NextRequest) {
     if (type === 'group-mentoring' && priceId !== process.env.NEXT_PUBLIC_STRIPE_GROUP_MENTORING_PRICE_ID) {
       return NextResponse.json({ error: 'Érvénytelen csoportos mentoring azonosító.' }, { status: 400 });
     }
-    if (type === 'premium-mentoring' && priceId !== process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MENTORING_PRICE_ID) {
-      return NextResponse.json({ error: 'Érvénytelen prémium mentoring azonosító.' }, { status: 400 });
-    }
 
     let webinar = null;
     if (type === 'webinar' && webinarId) {
@@ -77,7 +76,9 @@ export async function POST(req: NextRequest) {
     const stripeType = (type === 'mentoring' || type === 'premium-mentoring' || type === 'group-mentoring') ? 'subscription' : type === 'strategy' || type === 'webinar' ? 'digital' : type;
 
     const { url } = await createCheckoutSession({
-      priceId,
+      ...(isPremiumMentoring
+        ? { priceData: { unitAmount: 8999000, currency: 'huf', recurring: { interval: 'month' }, productName: 'Prémium Privát Havi Mentorprogram' } }
+        : { priceId }),
       productType: stripeType as 'digital' | 'course' | 'subscription',
       customerEmail: billing.email,
       metadata: {
