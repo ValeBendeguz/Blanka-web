@@ -64,7 +64,7 @@ function CheckoutForm() {
     }
   }
 
-  if (!priceId) {
+  if (!priceId && type !== 'premium-mentoring') {
     return (
       <SectionWrapper bg="default">
         <div className="text-center py-16 font-sans text-brand-muted">

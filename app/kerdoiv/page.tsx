@@ -48,6 +48,9 @@ function KerdoivForm() {
     if (webinarId) {
       return `/webinar-regisztracio?id=${webinarId}&email=${encoded}`;
     }
+    if (type === 'premium-mentoring') {
+      return `/penztar?type=premium-mentoring&email=${encoded}`;
+    }
     if (priceId && type) {
       return `/penztar?priceId=${priceId}&type=${type}&email=${encoded}`;
     }
