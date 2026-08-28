@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     if (!priceId && !isPremiumMentoring) {
       return NextResponse.json({ error: 'Hiányzó termék azonosító.' }, { status: 400 });
     }
-    if (!billing?.email || !billing?.name) {
+    if (!billing?.email || (!billing?.name && !billing?.companyName)) {
       return NextResponse.json({ error: 'Kérlek add meg a számlázási adatokat.' }, { status: 400 });
     }
 
