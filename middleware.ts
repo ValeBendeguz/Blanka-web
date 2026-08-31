@@ -13,7 +13,6 @@ function timingSafeEqual(a: string, b: string): boolean {
 }
 
 const SITE_AUTH_COOKIE = 'site_auth';
-const ELOFIZETES_AUTH_COOKIE = 'elofizetes_auth';
 
 function checkSitePassword(req: NextRequest): NextResponse | null {
   const password = process.env.SITE_PASSWORD;
@@ -29,21 +28,6 @@ function checkSitePassword(req: NextRequest): NextResponse | null {
   return NextResponse.redirect(loginUrl);
 }
 
-function checkElofizetesPassword(req: NextRequest): NextResponse | null {
-  const password = process.env.SUBSCRIPTION_PAGE_PASSWORD;
-  if (!password) return null;
-
-  const { pathname } = req.nextUrl;
-  if (pathname !== '/elofizetes' && !pathname.startsWith('/elofizetes/')) return null;
-  if (pathname === '/elofizetes/login') return null;
-
-  const cookie = req.cookies.get(ELOFIZETES_AUTH_COOKIE);
-  if (cookie && timingSafeEqual(cookie.value, password)) return null;
-
-  const loginUrl = new URL('/elofizetes/login', req.url);
-  return NextResponse.redirect(loginUrl);
-}
-
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
@@ -51,9 +35,6 @@ export function middleware(req: NextRequest) {
 
   const blocked = checkSitePassword(req);
   if (blocked) return blocked;
-
-  const elofizetesBlocked = checkElofizetesPassword(req);
-  if (elofizetesBlocked) return elofizetesBlocked;
 
   if (!pathname.startsWith('/admin')) return NextResponse.next();
   if (pathname === '/admin/login') return NextResponse.next();
